@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import Swift
+import Darwin
 
 /// A double-ended priority queue built on top of a [Min-Max Heap](https://en.wikipedia.org/wiki/Min-max_heap)
 /// data structure.
@@ -126,7 +127,8 @@ public struct PriorityQueue<Element: Comparable> {
         if levelIsMin {
             let parentIdx = _parentIndex(of: index)
             if storage[index] > storage[parentIdx] {
-                storage.swapAt(index, parentIdx)
+//                storage.swapAt(index, parentIdx)
+                self._swapAt(index, parentIdx)
                 _bubbleUpMax(startingAt: parentIdx)
             } else {
                 _bubbleUpMin(startingAt: index)
@@ -134,7 +136,8 @@ public struct PriorityQueue<Element: Comparable> {
         } else {
             let parentIdx = _parentIndex(of: index)
             if storage[index] < storage[parentIdx] {
-                storage.swapAt(index, parentIdx)
+//                storage.swapAt(index, parentIdx)
+                self._swapAt(index, parentIdx)
                 _bubbleUpMin(startingAt: parentIdx)
             } else {
                 _bubbleUpMax(startingAt: index)
@@ -147,7 +150,8 @@ public struct PriorityQueue<Element: Comparable> {
 
         let grandparentIdx = _grandparentIndex(of: index)
         if storage[index] < storage[grandparentIdx] {
-            storage.swapAt(index, grandparentIdx)
+//            storage.swapAt(index, grandparentIdx)
+            self._swapAt(index, grandparentIdx)
             _bubbleUpMin(startingAt: grandparentIdx)
         }
     }
@@ -157,7 +161,8 @@ public struct PriorityQueue<Element: Comparable> {
 
         let grandparentIdx = _grandparentIndex(of: index)
         if storage[index] > storage[grandparentIdx] {
-            storage.swapAt(index, grandparentIdx)
+//            storage.swapAt(index, grandparentIdx)
+            self._swapAt(index, grandparentIdx)
             _bubbleUpMax(startingAt: grandparentIdx)
         }
     }
@@ -175,7 +180,8 @@ public struct PriorityQueue<Element: Comparable> {
             return storage.removeLast()
         }
 
-        storage.swapAt(index, storage.endIndex - 1)
+//        storage.swapAt(index, storage.endIndex - 1)
+        self._swapAt(index, storage.endIndex - 1)
         let removed = storage.removeLast()
 
         _trickleDown(startingAt: index)
@@ -196,6 +202,13 @@ public struct PriorityQueue<Element: Comparable> {
         }
     }
 
+    @inline(__always)
+    private mutating func _swapAt(_ first: Int, _ second: Int) {
+        let tmp = self.storage[first]
+        self.storage[first] = self.storage[second]
+        self.storage[second] = tmp
+    }
+    
     private mutating func _trickleDownMin(startingAt index: Int) {
         let leftIdx = _leftChildIndex(of: index)
 
@@ -210,16 +223,19 @@ public struct PriorityQueue<Element: Comparable> {
 
         if isChild {
             if storage[smallestDescendantIdx] < storage[index] {
-                storage.swapAt(smallestDescendantIdx, index)
+//                storage.swapAt(smallestDescendantIdx, index)
+                self._swapAt(smallestDescendantIdx, index)
             }
         } else {
             // Smallest is a grandchild
             if storage[smallestDescendantIdx] < storage[index] {
-                storage.swapAt(smallestDescendantIdx, index)
+//                storage.swapAt(smallestDescendantIdx, index)
+                self._swapAt(smallestDescendantIdx, index)
 
                 let parentIdx = _parentIndex(of: smallestDescendantIdx)
                 if storage[smallestDescendantIdx] > storage[parentIdx] {
-                    storage.swapAt(smallestDescendantIdx, parentIdx)
+//                    storage.swapAt(smallestDescendantIdx, parentIdx)
+                    self._swapAt(smallestDescendantIdx, parentIdx)
                 }
 
                 _trickleDownMin(startingAt: smallestDescendantIdx)
@@ -241,16 +257,19 @@ public struct PriorityQueue<Element: Comparable> {
 
         if isChild {
             if storage[largestDescendantIdx] > storage[index] {
-                storage.swapAt(largestDescendantIdx, index)
+//                storage.swapAt(largestDescendantIdx, index)
+                self._swapAt(largestDescendantIdx, index)
             }
         } else {
             // Largest is a grandchild
             if storage[largestDescendantIdx] > storage[index] {
-                storage.swapAt(largestDescendantIdx, index)
+//                storage.swapAt(largestDescendantIdx, index)
+                self._swapAt(largestDescendantIdx, index)
 
                 let parentIdx = _parentIndex(of: largestDescendantIdx)
                 if storage[largestDescendantIdx] < storage[parentIdx] {
-                    storage.swapAt(largestDescendantIdx, parentIdx)
+//                    storage.swapAt(largestDescendantIdx, parentIdx)
+                    self._swapAt(largestDescendantIdx, parentIdx)
                 }
 
                 _trickleDownMax(startingAt: largestDescendantIdx)
